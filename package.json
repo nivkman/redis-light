@@ -1,0 +1,52 @@
+{
+  "name": "redis-light",
+  "version": "1.0.0",
+  "description": "Redis in one line of code: JSON get/set with TTL, cache-aside remember(), distributed locks, rate limiting, pub/sub and namespaces - with full ioredis access.",
+  "main": "src/index.js",
+  "types": "src/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./src/index.js"
+    }
+  },
+  "files": [
+    "src/"
+  ],
+  "scripts": {
+    "test": "node --test test/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nivkman/redis-light.git"
+  },
+  "homepage": "https://github.com/nivkman/redis-light#readme",
+  "bugs": {
+    "url": "https://github.com/nivkman/redis-light/issues"
+  },
+  "keywords": [
+    "redis",
+    "ioredis",
+    "cache",
+    "remember",
+    "lock",
+    "distributed-lock",
+    "rate-limit",
+    "pubsub",
+    "json",
+    "lightweight"
+  ],
+  "author": "Niv Kaufman",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "ioredis": "^6.0.0",
+    "logger-standard": "^2.0.1"
+  }
+}

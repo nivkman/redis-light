@@ -1,0 +1,73 @@
+name: CI
+
+# Tests run on every push and PR against a real Redis. On push to main, the
+# standard nivkman/EnterGreat release follows: auto patch-bump the version,
+# commit + tag it back to main ([skip ci] so it doesn't loop), then publish
+# to npm. Publishing is skipped until the NPM_TOKEN secret is set.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20, 22, 24]
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: --health-cmd "redis-cli ping" --health-interval 2s --health-timeout 2s --health-retries 15
+    env:
+      REDIS_URL: redis://localhost:6379
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci
+      - run: npm test
+
+  publish:
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    steps:
+      - name: Check for NPM_TOKEN
+        id: token
+        run: echo "present=${{ secrets.NPM_TOKEN != '' }}" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v4
+        if: steps.token.outputs.present == 'true'
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        if: steps.token.outputs.present == 'true'
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org/
+
+      - run: npm ci
+        if: steps.token.outputs.present == 'true'
+
+      - name: Bump patch version
+        if: steps.token.outputs.present == 'true'
+        run: |
+          git config user.name  "eg-ci[bot]"
+          git config user.email "ci@entergreat.com"
+          npm version patch -m "ci: release %s [skip ci]"
+          git push --follow-tags origin HEAD:main
+
+      - name: Publish to npm
+        if: steps.token.outputs.present == 'true'
+        run: npm publish
