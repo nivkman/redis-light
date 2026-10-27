@@ -1,5 +1,7 @@
 # redis-light ⚡
 
+[![npm version](https://img.shields.io/npm/v/redis-light)](https://www.npmjs.com/package/redis-light)
+
 Redis in one line of code. JSON values with TTL, cache-aside `remember()`, distributed locks, rate limiting, pub/sub and namespaces — while keeping full access to [ioredis](https://github.com/redis/ioredis).
 
 ```js
