@@ -1,6 +1,6 @@
 {
   "name": "redis-light",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Redis in one line of code: JSON get/set with TTL, cache-aside remember(), distributed locks, rate limiting, pub/sub and namespaces - with full ioredis access.",
   "main": "src/index.js",
   "types": "src/index.d.ts",
